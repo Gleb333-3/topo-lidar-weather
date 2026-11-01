@@ -31,35 +31,55 @@ t_ground = np.full(len(directions), np.inf)
 down = dz < 0
 
 t_ground[down] = -sensor[2]/ dz[down]
-t_ground[t_ground > 80] = np.inf
+# Building walls along the street: left at y = +10, right at y = -10, 8 m tall
+ray_dy = directions[:, 1]
 
-hit = np.isfinite(t_ground)
-points = sensor + t_ground[hit, None] * directions[hit]
+# Left wall
+t_left = np.full(len(directions), np.inf)
+to_left = ray_dy > 0
+t_left[to_left] = 10 / ray_dy[to_left]
+z_left = sensor[2] + t_left * dz
+t_left[(z_left < 0) | (z_left > 8)] = np.inf  # below ground or above the roof
+
+# Right wall
+t_right = np.full(len(directions), np.inf)
+to_right = ray_dy < 0
+t_right[to_right] = -10 / ray_dy[to_right]
+z_right = sensor[2] + t_right * dz
+t_right[(z_right < 0) | (z_right > 8)] = np.inf
+
+# Each ray stops at the first surface it hits
+t = np.minimum(t_ground, np.minimum(t_left, t_right))
+t[t > 80] = np.inf  # beyond sensor range
+
+surface = np.where(t == t_ground, 0, 1)  # 0 = ground, 1 = wall
+
+hit = np.isfinite(t)
+points = sensor + t[hit, None] * directions[hit]
+surface = surface[hit]
+
 
 
 if __name__ == "__main__":
-    print(directions.shape)          # должно быть (28800, 3)
-    print(directions[0])             # первый луч: примерно [0.96, 0, -0.28]
-    print(np.allclose(np.linalg.norm(directions, axis=1), 1))
-    print(dz.shape)
-    print(dz.min(), dz.max())
-    print(t_ground[:5])
-    print(np.sum(down))  # сколько лучей смотрит вниз
-    print(np.sum(np.isfinite(t_ground)))  # сколько попало в асфальт ближе 80 м
-    print(np.min(t_ground))  # ближайшее попадание, около 6.5
-    print(points.shape)
-    print(np.allclose(points[:, 2], 0))
-    print(points[0])
+    print("points:", points.shape)
+    print("ground:", np.sum(surface == 0), "walls:", np.sum(surface == 1))
+    print("max |y|:", np.abs(points[:, 1]).max())
 
-    plt.figure(figsize=(8, 8))
-    plt.scatter(points[:, 0], points[:, 1], s=0.2)
-    plt.scatter(0, 0, c="red", s=20)
-    plt.axis("equal")
+    plt.figure(figsize=(12, 4))
+    plt.scatter(points[surface == 0, 0], points[surface == 0, 1], s=0.3, label="ground")
+    plt.scatter(points[surface == 1, 0], points[surface == 1, 1], s=0.3, label="walls")
+    plt.scatter(0, 0, c="red", s=25, label="sensor")
+    plt.xlim(-60, 60)
+    plt.ylim(-15, 15)
     plt.xlabel("x, m (forward)")
     plt.ylabel("y, m (left)")
-    plt.title("LiDAR ground hits, top view")
-    plt.savefig(ROOT / "figures" / "ground_rings.png", dpi=200)
+    plt.title("LiDAR scan: ground and walls, top view")
+    legend = plt.legend()
+    for handle in legend.legend_handles:
+        handle.set_sizes([20])  # same marker size for every legend entry
 
+    plt.savefig(ROOT / "figures" / "ground_walls.png", dpi=200)
     plt.show()
+
 
 

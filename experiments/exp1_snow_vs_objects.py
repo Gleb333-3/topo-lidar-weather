@@ -206,7 +206,7 @@ def make_f1_figure(summary, names):
     ax.set_xticklabels([f"{lv} snow" for lv in levels])
     ax.set_ylabel("F1 (snow detection)")
     ax.set_ylim(0, 1.05)
-    ax.set_title("Snow removal quality, mean ± std over 10 scans")
+    ax.set_title("Snow removal quality, mean +- std over 10 scans")
     ax.legend(fontsize=8, loc="center left", bbox_to_anchor=(1, 0.5))
     fig.tight_layout()
     fig.savefig(ROOT / "figures" / "exp1_f1.png", dpi=170)

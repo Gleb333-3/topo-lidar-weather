@@ -196,4 +196,4 @@ if __name__ == "__main__":
         h.set_sizes([20])
     fig.tight_layout(rect=(0, 0, 0.88, 1))
     fig.savefig(ROOT / "figures" / "scan_clear_vs_snow.png", dpi=200)
-    plt.show()
+    print("saved figures/scan_clear_vs_snow.png")

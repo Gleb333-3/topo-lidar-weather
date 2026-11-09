@@ -154,6 +154,8 @@ The result is not "better than everything": a carefully tuned DROR is just as ac
 ## Running it
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 python src/simulate.py
 python src/topology.py

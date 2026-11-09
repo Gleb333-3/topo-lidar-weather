@@ -154,13 +154,18 @@ The result is not "better than everything": a carefully tuned DROR is just as ac
 ## Running it
 
 ```bash
-pip install -r requirements.txt     # numpy, scipy, matplotlib (gudhi optional, for a cross-check)
-python src/simulate.py               # clear vs snowy scan -> figures/scan_clear_vs_snow.png
-python src/topology.py               # filter on one heavy-snow scan
-python experiments/exp1_snow_vs_objects.py   # ~1-2 min
-python experiments/exp2_stability.py         # ~10 s
-python experiments/exp3_downsampling.py      # ~1 min
+pip install -r requirements.txt
+python src/simulate.py
+python src/topology.py
+python experiments/exp1_snow_vs_objects.py
+python experiments/exp2_stability.py
+python experiments/exp3_downsampling.py
 ```
+
+- `simulate.py` draws a clear and a snowy scan (`figures/scan_clear_vs_snow.png`).
+- `topology.py` runs the filter on one heavy-snow scan.
+- Experiment 1 takes about 1–2 min, experiment 2 about 10 s, experiment 3 about 1 min.
+- `gudhi` is optional (only used for a cross-check in experiment 2).
 
 Everything is seeded, so the numbers above are reproducible.
 
